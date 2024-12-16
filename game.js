@@ -210,7 +210,7 @@ function finalizeResult() {
     }
 
     const result = success ? choice.success : choice.failure;
-    document.getElementById("gameText").innerHTML = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);;
+    document.getElementById("gameText").innerHTML = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);
 
     const isGameOver = updateState(result.changes);
     if (isGameOver) return;
@@ -276,6 +276,9 @@ function checkGameOver() {
         const restartButton = document.createElement("button");
         restartButton.innerText = "다시 시작";
         restartButton.onclick = restartGame;
+
+        const choicesDiv = document.getElementById("choices");
+        choicesDiv.innerHTML = "";
         choicesDiv.appendChild(restartButton);
 
         return true;
@@ -285,7 +288,7 @@ function checkGameOver() {
 
 function restartGame() {
     playerState = {
-        health: 100,
+        health: 2,
         hunger: 50,
         wealth: 50,
         relationship: {
