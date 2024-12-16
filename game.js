@@ -288,7 +288,7 @@ function checkGameOver() {
 
 function restartGame() {
     playerState = {
-        health: 2,
+        health: 100,
         hunger: 50,
         wealth: 50,
         relationship: {
