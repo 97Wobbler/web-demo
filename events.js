@@ -37,7 +37,7 @@ const events = [
                     },
                 },
                 failure: {
-                    description: "당신은 말을 더듬고, 몸짓은 어색했다. 신도들은 실망한 얼굴로 '신도 포기'라는 새 유행어를 만들어버렸다.",
+                    description: "당신은 말을 더듬고, 몸짓은 어색했다. 신도들은 당신을 경멸하는 표정으로 바라보다가 이내 떠나갔다.",
                     changes: {
                         relationship: {
                             perennial: -5,
@@ -153,7 +153,10 @@ const events = [
                 text: "그들에게 맞서 설득한다.",
                 type: "skill",
                 difficulty: 20,
-                required: "charisma",
+                required: {
+                    type: "skill",
+                    key: "charisma",
+                },
                 success: {
                     description: "당신의 논리적이고 카리스마 있는 태도에 신도들은 한동안 침묵했다. 그들은 얼굴을 붉혔으나 결국 아무 말 없이 길을 비켜주었다.",
                     changes: {
@@ -416,7 +419,10 @@ const events = [
                 text: "의식을 방해한다.",
                 type: "skill",
                 difficulty: 25,
-                required: "charisma",
+                required: {
+                    type: "skill",
+                    key: "charisma",
+                },
                 success: {
                     description:
                         "당신은 신도들을 설득해 의식을 중단시켰다. 그야말로 신들린 언변이었다. 우두머리는 당신을 경계하며 조용히 물러났고, 주변 분위기는 묘하게 평온해졌다.",
@@ -1741,7 +1747,7 @@ const events = [
             {
                 text: "조심스럽게 살펴보며 이동한다.",
                 type: "normal",
-                difficulty: 12,
+                difficulty: 17,
                 required: null,
                 success: {
                     description: "주위를 세심히 관찰하며 이동했다. 위험을 피하며 새로운 지역에 도착했다.",
@@ -1766,7 +1772,7 @@ const events = [
                 failure: {
                     description: "서두르다 발을 헛디뎌 다쳤다. 목적지에 도달했지만, 대가가 컸다.",
                     changes: {
-                        health: -5,
+                        health: -10,
                     },
                 },
             },

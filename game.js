@@ -31,7 +31,7 @@ function loadEvent(index) {
     currentEventID = event.id;
     eventHistory.push(currentEventID);
 
-    document.getElementById("gameText").innerHTML = event.description.replace(". ",  ".<br>");
+    document.getElementById("gameText").innerHTML = event.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);
 
     hideDiceUI();
     showChoiceUI();
@@ -210,7 +210,7 @@ function finalizeResult() {
     }
 
     const result = success ? choice.success : choice.failure;
-    document.getElementById("gameText").innerText = result.description;
+    document.getElementById("gameText").innerText = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);;
 
     const isGameOver = updateState(result.changes);
     if (isGameOver) return;
