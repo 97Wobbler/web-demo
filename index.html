@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRPG</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="turnCount">0</div>
+    <div id="status">
+        <div>체력: <span id="health">100</span></div>
+        <div>허기: <span id="hunger">50</span></div>
+        <div>재화: <span id="wealth">50</span></div>
+    </div>
+    <div id="gameContainer">
+        <div id="gameText">게임을 시작하려면 버튼을 클릭하세요.</div>
+        <div id="diceUI" style="display: none;">
+            <div id="choice-text">선택지 텍스트</div>
+            <div id="choice-difficulty">난이도 텍스트</div>
+            <div id="dice-sum">합계</div>
+            <div id="diceContainer"></div>
+            <div id="dice-roll-chance">남은 굴리기 횟수</div>
+            <div id="diceRollButtons">
+                <button id="rollButton" onclick="rollDice()">주사위 굴리기</button>
+                <button id="finalizeResult" onclick="finalizeResult()">확인</button>
+            </div>
+        </div>
+        <div id="choicesContainer">
+            <div id="choices">
+                <button onclick="startGame()">게임 시작</button>
+            </div>
+        </div>
+    </div>
+    <script src="events.js"></script>
+    <script src="game.js"></script>
+</body>
+
+</html>
