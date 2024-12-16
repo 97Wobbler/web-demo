@@ -210,7 +210,7 @@ function finalizeResult() {
     }
 
     const result = success ? choice.success : choice.failure;
-    document.getElementById("gameText").innerText = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);;
+    document.getElementById("gameText").innerHTML = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);;
 
     const isGameOver = updateState(result.changes);
     if (isGameOver) return;
@@ -272,7 +272,7 @@ function updateStatus() {
 
 function checkGameOver() {
     if (playerState.health <= 0) {
-        document.getElementById("gameText").innerText = "체력이 0이 되어 게임이 종료되었습니다.";
+        document.getElementById("gameText").innerHTML = "체력이 0이 되어 게임이 종료되었습니다.";
         const restartButton = document.createElement("button");
         restartButton.innerText = "다시 시작";
         restartButton.onclick = restartGame;
