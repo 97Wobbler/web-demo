@@ -1,5 +1,125 @@
 const events = [
     {
+        id: "start_1",
+        description: "어떤 능력을 선택할까? (1/3)",
+        repeatable: false,
+        requiredEvents: [],
+        choices: [
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_2",
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_2",
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_2",
+                },
+            },
+        ],
+    },
+    {
+        id: "start_2",
+        description: "어떤 능력을 선택할까? (2/3)",
+        repeatable: false,
+        requiredEvents: ["start_1"],
+        choices: [
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_3",
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_3",
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                    nextEventID: "start_3",
+                },
+            },
+        ],
+    },
+    {
+        id: "start_3",
+        description: "어떤 능력을 선택할까? (3/3)",
+        repeatable: false,
+        requiredEvents: ["start_1", "start_2"],
+        choices: [
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                },
+            },
+            {
+                type: "obtain-skill",
+                success: {
+                    changes: {
+                        skill: {
+                            add: "__random__",
+                        },
+                    },
+                },
+            },
+        ],
+    },
+    {
         id: "perennial_test",
         description:
             "영속회의 신도들이 당신을 발견하고, 신의 시험을 거치라고 강요한다. 그들의 눈빛에는 확신이 서려 있고, 당신은 불쾌한 연극의 조연이 된 기분이다.",

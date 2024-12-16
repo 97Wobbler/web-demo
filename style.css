@@ -8,6 +8,7 @@
 * {
     font-family: NeoDunggeunmo;
 }
+
 body {
     background-color: #222;
     color: #ddd;
@@ -46,6 +47,8 @@ body {
     line-height: 160%;
     height: 160px;
     overflow-wrap: break-word;
+    overflow-y: scroll;
+    scrollbar-width: none;
 }
 
 #diceUI {
@@ -58,7 +61,7 @@ body {
 #diceRollButtons {
     display: flex;
     flex-direction: column;
-    width: 100px;
+    width: 120px;
     gap: 10px;
 }
 

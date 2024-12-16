@@ -12,7 +12,7 @@ let playerState = {
 };
 
 let currentEventID = null;
-let nextEventID = "start_0";
+let nextEventID = "start_1";
 let eventHistory = [];
 let eventCount = 0;
 
@@ -21,6 +21,8 @@ let locked = [false, false, false, false, false]; // 고정 상태 관리
 let rollsRemaining = 0;
 
 let choice;
+let choiceIndex;
+let obtainSkillList = [];
 
 function startGame() {
     restartGame();
@@ -36,18 +38,20 @@ function loadEvent(index) {
     hideDiceUI();
     showChoiceUI();
 
+    obtainSkillList = [];
+
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
 
-    event.choices.forEach((choiceObj) => {
-        const button = createChoiceButton(choiceObj);
+    event.choices.forEach((choiceObj, index) => {
+        const button = createChoiceButton(choiceObj, index);
         choicesDiv.appendChild(button);
     });
 
     updateButtonsState();
 }
 
-function createChoiceButton(choiceObj) {
+function createChoiceButton(choiceObj, index) {
     const button = document.createElement("button");
 
     let buttonHTML = choiceObj.text;
@@ -59,6 +63,7 @@ function createChoiceButton(choiceObj) {
             buttonHTML += ` (난이도: ${choiceObj.difficulty})`;
             break;
         case "item":
+        case "obtain-skill":
             break;
     }
 
@@ -67,12 +72,16 @@ function createChoiceButton(choiceObj) {
             break;
         case "skill":
             const skillKey = choiceObj.required.key;
-            const hasSkill = playerState.skills.includes(skillKey);
+            const skill = skills.find((skill) => skill.id === skillKey);
+            if (skill) {
+                const skillName = skill.name;
+                const hasSkill = playerState.skills.includes(skillKey);
 
-            if (hasSkill) {
-                buttonHTML = `<span class="green">${skillKey} </span>${buttonHTML}`;
-            } else {
-                buttonHTML = `<span class="red">${skillKey} </span>${buttonHTML}`;
+                if (hasSkill) {
+                    buttonHTML = `<span class="green">${skillName} </span>${buttonHTML}`;
+                } else {
+                    buttonHTML = `<span class="red">${skillName} </span>${buttonHTML}`;
+                }
             }
             break;
         case "wealth":
@@ -87,14 +96,38 @@ function createChoiceButton(choiceObj) {
             }
             break;
         case "item":
-            const itemKey = choiceObj.required.key;
-            const hasItem = playerState.inventory.includes(itemKey);
+            {
+                const itemKey = choiceObj.required.key;
+                const item = items.find((item) => item.id === itemKey);
+                if (item) {
+                    const itemName = item.name;
+                    const hasItem = playerState.inventory.includes(itemKey);
 
-            if (hasItem) {
-                buttonHTML = `<span class="green">${itemKey} </span>${buttonHTML}`;
-            } else {
-                buttonHTML = `<span class="red">${itemKey} </span>${buttonHTML}`;
-                button.disabled = true;
+                    if (hasItem) {
+                        buttonHTML = `<span class="green">${itemName} </span>${buttonHTML}`;
+                    } else {
+                        buttonHTML = `<span class="red">${itemName} </span>${buttonHTML}`;
+                        button.disabled = true;
+                    }
+                }
+            }
+            break;
+        case "obtain-skill":
+            {
+                const skillID = choiceObj.success.changes.skill.add;
+                const isRandom = skillID === "__random__";
+                if (isRandom) {
+                    const randomSkill = skills[Math.floor(skills.length * Math.random())];
+                    const randomSkillID = randomSkill.id;
+                    obtainSkillList.push(randomSkillID);
+
+                    buttonHTML = `<span class="green">${randomSkill.name}</span>`;
+                } else {
+                    const skill = skills.find((skill) => skill.id === skillID);
+
+                    buttonHTML = `<span class="green">${skill.name}</span>`;
+                    obtainSkillList.push(skillID);
+                }
             }
             break;
     }
@@ -103,12 +136,13 @@ function createChoiceButton(choiceObj) {
 
     button.onclick = () => {
         choice = choiceObj;
+        choiceIndex = index;
 
         initDice();
         showDiceUI();
         hideChoiceUI();
 
-        if (choice.type === "item") {
+        if (choice.type === "item" || choice.type === "obtain-skill") {
             finalizeResult();
         }
     };
@@ -202,20 +236,26 @@ function finalizeResult() {
     if (choice.type === "item") {
         const itemKey = choice.required.key;
         const hasItem = playerState.inventory.includes(itemKey);
-        console.log({ itemKey, hasItem });
         success = hasItem;
+    } else if (choice.type === "obtain-skill") {
+        success = true;
     } else {
         const sum = dice.reduce((a, b) => (b === null ? a : a + b), 0);
         success = sum >= choice.difficulty;
     }
 
     const result = success ? choice.success : choice.failure;
-    document.getElementById("gameText").innerHTML = result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);
+    document.getElementById("gameText").innerHTML = result.description ? result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`) : "";
 
     const isGameOver = updateState(result.changes);
     if (isGameOver) return;
 
     nextEventID = result.nextEventID || null;
+
+    if (choice.type === "obtain-skill") {
+        loadNextEvent();
+        return;
+    }
 
     const choicesDiv = document.getElementById("choices");
     choicesDiv.innerHTML = "";
@@ -236,9 +276,10 @@ function loadNextEvent() {
 
     if (nextEventID) {
         const nextEvent = events.find((event) => event.id === nextEventID);
+        const nextEventIndex = events.indexOf(nextEvent);
 
         if (nextEvent) {
-            loadEvent(nextEventID);
+            loadEvent(nextEventIndex);
             nextEventID = null;
             return;
         }
@@ -257,6 +298,32 @@ function updateState(changes) {
             if (playerState.relationship[key] !== undefined) {
                 playerState.relationship[key] += changes.relationship[key];
             }
+        }
+    }
+    if (changes.skill) {
+        if (changes.skill.add) {
+            if (changes.skill.add === "__random__") {
+                const selectedSkillID = obtainSkillList[choiceIndex];
+                const alreadyHasSkill = playerState.skills.includes(selectedSkillID);
+                if (!alreadyHasSkill) playerState.skills.push(selectedSkillID);
+            } else {
+                const alreadyHasSkill = playerState.skills.includes(changes.skill.add);
+                if (!alreadyHasSkill) playerState.skills.push(changes.skill.add);
+            }
+        }
+        if (changes.skill.remove) {
+            const skillIndex = playerState.skills.indexOf(changes.skill.remove);
+            if (skillIndex !== -1) playerState.skills.splice(skillIndex, 1);
+        }
+    }
+    if (changes.item) {
+        if (changes.item.add) {
+            const alreadyHasItem = playerState.inventory.includes(changes.item.add);
+            if (!alreadyHasItem) playerState.inventory.push(changes.item.add);
+        }
+        if (changes.item.remove) {
+            const itemIndex = playerState.inventory.indexOf(changes.item.remove);
+            if (itemIndex !== -1) playerState.inventory.splice(itemIndex, 1);
         }
     }
 
@@ -301,7 +368,7 @@ function restartGame() {
     };
 
     currentEventID = null;
-    nextEventID = "start_0";
+    nextEventID = "start_1";
     eventHistory = [];
     eventCount = 0;
     updateStatus();
