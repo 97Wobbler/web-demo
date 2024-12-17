@@ -234,10 +234,10 @@ function loadRandomEvent() {
 
 function updateDynamicProbability() {
     for (const event of events) {
-        event.dynamicProbability = event.probability;
+        event.dynamicProbability = event.probability ? event.probability : 0;
 
         if (eventHistory[eventHistory.length - 1] === event.id) {
-            event.probability = 0.1;
+            event.dynamicProbability = 0.1;
             continue;
         }
 
