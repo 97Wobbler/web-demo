@@ -173,10 +173,14 @@ function createChoiceButton(choiceObj, index) {
     button.innerHTML = buttonHTML;
 
     button.onclick = () => {
+        if (typingTimeout) {
+            skipGameTextAnimation();
+            return;
+        }
+
         choice = choiceObj;
         choiceIndex = index;
 
-        skipGameTextAnimation();
         initDice();
         showDiceUI();
         hideChoiceUI();
@@ -398,9 +402,7 @@ function updateState(changes) {
     return checkGameOver();
 }
 
-function updateStatus(changes) {
-    if (!changes) return;
-
+function updateStatus(changes = { health: 0, hunger: 0, wealth: 0 }) {
     for (const key of ["health", "hunger", "wealth"]) {
         if (changes[key]) {
             const textElement = document.getElementById(key);

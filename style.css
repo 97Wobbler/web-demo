@@ -182,9 +182,9 @@ body {
 }
 
 .highlight-green {
-    animation: highlightGreen 1s forwards;
+    animation: highlightGreen 2s forwards;
 }
 
 .highlight-red {
-    animation: highlightRed 1s forwards;
+    animation: highlightRed 2s forwards;
 }
