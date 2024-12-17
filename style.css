@@ -7,6 +7,11 @@
 
 * {
     font-family: NeoDunggeunmo;
+
+    -webkit-user-select: none; /* Safari, Chrome */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer */
+    user-select: none; /* 표준 */
 }
 
 body {
@@ -23,7 +28,7 @@ body {
 }
 
 #turnCount {
-    font-size: 20px;
+    font-size: 24px;
 }
 
 #status {
@@ -34,14 +39,17 @@ body {
     font-size: 16px;
     line-height: 1.5;
     padding: 30px 0;
+    opacity: 0.8;
 }
 
 #gameContainer {
+    width: 80%;
     max-width: 400px;
     text-align: center;
 }
 
 #gameText {
+    text-align: left;
     margin-bottom: 20px;
     font-size: 18px;
     line-height: 160%;
@@ -55,7 +63,7 @@ body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    height: 300px;
+    height: 250px;
 }
 
 #diceRollButtons {
@@ -91,7 +99,7 @@ body {
 #choicesContainer {
     display: flex;
     flex-direction: column-reverse;
-    height: 300px;
+    height: 250px;
 }
 
 #choices {
@@ -103,7 +111,7 @@ body {
 
 #choices button {
     background-color: #444;
-    color: #fff;
+    color: #d0d0d0;
     border: 1px solid #666;
     padding: 10px;
     cursor: pointer;
@@ -112,6 +120,7 @@ body {
 }
 
 #choices button:hover {
+    color: #fff;
     background-color: #555;
 }
 
@@ -133,7 +142,7 @@ body {
     height: 50px;
     font-size: 50px;
     text-align: center;
-    line-height: 44px;
+    line-height: 54px;
     background-color: #444;
     color: #fff;
     border: 1px solid #666;
@@ -152,4 +161,30 @@ body {
 
 .red {
     color: #ff0000;
+}
+
+@keyframes highlightGreen {
+    0% {
+        color: #00ff00;
+    }
+    100% {
+        color: inherit; /* 원래 색상으로 돌아감 */
+    }
+}
+
+@keyframes highlightRed {
+    0% {
+        color: #ff0000;
+    }
+    100% {
+        color: inherit; /* 원래 색상으로 돌아감 */
+    }
+}
+
+.highlight-green {
+    animation: highlightGreen 1s forwards;
+}
+
+.highlight-red {
+    animation: highlightRed 1s forwards;
 }

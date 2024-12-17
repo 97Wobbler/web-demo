@@ -1,5 +1,5 @@
 let playerState = {
-    health: 100,
+    health: 50,
     hunger: 50,
     wealth: 50,
     relationship: {
@@ -24,6 +24,9 @@ let choice;
 let choiceIndex;
 let obtainSkillList = [];
 
+let typingTimeout;
+let skipTyping = false;
+
 function startGame() {
     restartGame();
 }
@@ -33,7 +36,8 @@ function loadEvent(index) {
     currentEventID = event.id;
     eventHistory.push(currentEventID);
 
-    document.getElementById("gameText").innerHTML = event.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);
+    const gameText = event.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`);
+    setGameText(gameText);
 
     hideDiceUI();
     showChoiceUI();
@@ -49,6 +53,42 @@ function loadEvent(index) {
     });
 
     updateButtonsState();
+}
+
+function setGameText(text) {
+    const gameTextElement = document.getElementById("gameText");
+    let index = 0;
+    const cleanText = text.replace(/<br>/g, "\n");
+    let finalText = "";
+
+    gameTextElement.innerHTML = "";
+    skipTyping = false;
+
+    function typeCharacter() {
+        if (skipTyping) {
+            gameTextElement.innerText = cleanText;
+            clearTimeout(typingTimeout);
+            typingTimeout = null;
+            return;
+        }
+
+        if (index >= cleanText.length) {
+            clearTimeout(typingTimeout);
+            typingTimeout = null;
+            return;
+        }
+
+        finalText += cleanText[index] === "\n" ? "<br>" : cleanText[index];
+        gameTextElement.innerHTML = finalText;
+        index++;
+        typingTimeout = setTimeout(typeCharacter, 35);
+    }
+
+    typeCharacter();
+}
+
+function skipGameTextAnimation() {
+    skipTyping = true;
 }
 
 function createChoiceButton(choiceObj, index) {
@@ -119,13 +159,11 @@ function createChoiceButton(choiceObj, index) {
                 if (isRandom) {
                     const randomSkill = skills[Math.floor(skills.length * Math.random())];
                     const randomSkillID = randomSkill.id;
+                    buttonHTML = randomSkill.name;
                     obtainSkillList.push(randomSkillID);
-
-                    buttonHTML = `<span class="green">${randomSkill.name}</span>`;
                 } else {
                     const skill = skills.find((skill) => skill.id === skillID);
-
-                    buttonHTML = `<span class="green">${skill.name}</span>`;
+                    buttonHTML = skill.name;
                     obtainSkillList.push(skillID);
                 }
             }
@@ -138,6 +176,7 @@ function createChoiceButton(choiceObj, index) {
         choice = choiceObj;
         choiceIndex = index;
 
+        skipGameTextAnimation();
         initDice();
         showDiceUI();
         hideChoiceUI();
@@ -197,6 +236,11 @@ function updateDynamicProbability() {
     for (const event of events) {
         event.dynamicProbability = event.probability;
 
+        if (eventHistory[eventHistory.length - 1] === event.id) {
+            event.probability = 0.1;
+            continue;
+        }
+
         if (event.probabilityModifiers) {
             for (const modifier of event.probabilityModifiers) {
                 if (evaluateCondition(modifier.condition)) {
@@ -245,7 +289,8 @@ function finalizeResult() {
     }
 
     const result = success ? choice.success : choice.failure;
-    document.getElementById("gameText").innerHTML = result.description ? result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`) : "";
+    const gameText = result.description ? result.description.replaceAll(/(! |\. |\? )/g, (match) => `${match[0]}<br>`) : "";
+    setGameText(gameText);
 
     const isGameOver = updateState(result.changes);
     if (isGameOver) return;
@@ -264,7 +309,11 @@ function finalizeResult() {
     button.innerText = "다음";
 
     button.onclick = () => {
-        loadNextEvent();
+        if (typingTimeout) {
+            skipGameTextAnimation();
+        } else {
+            loadNextEvent();
+        }
     };
 
     choicesDiv.appendChild(button);
@@ -290,9 +339,25 @@ function loadNextEvent() {
 
 function updateState(changes) {
     if (!changes) return;
-    if (changes.wealth !== undefined) playerState.wealth += changes.wealth;
-    if (changes.health !== undefined) playerState.health += changes.health;
-    if (changes.hunger !== undefined) playerState.hunger += changes.hunger;
+
+    if (changes.health !== undefined) {
+        playerState.health += changes.health;
+        if (playerState.health > 50) playerState.health = 50;
+        if (playerState.health < 0) playerState.health = 0;
+    }
+
+    if (changes.wealth !== undefined) {
+        playerState.wealth += changes.wealth;
+        if (playerState.wealth > 50) playerState.wealth = 50;
+        if (playerState.wealth < 0) playerState.wealth = 0;
+    }
+
+    if (changes.hunger !== undefined) {
+        playerState.hunger += changes.hunger;
+        if (playerState.hunger > 50) playerState.hunger = 50;
+        if (playerState.hunger < 0) playerState.hunger = 0;
+    }
+
     if (changes.relationship) {
         for (const key in changes.relationship) {
             if (playerState.relationship[key] !== undefined) {
@@ -300,6 +365,7 @@ function updateState(changes) {
             }
         }
     }
+
     if (changes.skill) {
         if (changes.skill.add) {
             if (changes.skill.add === "__random__") {
@@ -316,6 +382,7 @@ function updateState(changes) {
             if (skillIndex !== -1) playerState.skills.splice(skillIndex, 1);
         }
     }
+
     if (changes.item) {
         if (changes.item.add) {
             const alreadyHasItem = playerState.inventory.includes(changes.item.add);
@@ -327,19 +394,31 @@ function updateState(changes) {
         }
     }
 
-    updateStatus();
+    updateStatus(changes);
     return checkGameOver();
 }
 
-function updateStatus() {
-    document.getElementById("health").innerText = playerState.health;
-    document.getElementById("hunger").innerText = playerState.hunger;
-    document.getElementById("wealth").innerText = playerState.wealth;
+function updateStatus(changes) {
+    if (!changes) return;
+
+    for (const key of ["health", "hunger", "wealth"]) {
+        if (changes[key]) {
+            const textElement = document.getElementById(key);
+            textElement.classList.remove(["highlight-green", "hightlight-red"]);
+            void textElement.offsetWidth; // Reinforce reflow
+
+            const animationClassName = changes[key] > 0 ? "highlight-green" : changes[key] < 0 ? "highlight-red" : null;
+            if (animationClassName) textElement.classList.add(animationClassName);
+            textElement.innerText = playerState[key];
+        }
+    }
 }
 
 function checkGameOver() {
     if (playerState.health <= 0) {
-        document.getElementById("gameText").innerHTML = "체력이 0이 되어 게임이 종료되었습니다.";
+        const gameText = "체력이 0이 되어 게임이 종료되었습니다.";
+        setGameText(gameText);
+
         const restartButton = document.createElement("button");
         restartButton.innerText = "다시 시작";
         restartButton.onclick = restartGame;
@@ -355,7 +434,7 @@ function checkGameOver() {
 
 function restartGame() {
     playerState = {
-        health: 100,
+        health: 50,
         hunger: 50,
         wealth: 50,
         relationship: {
@@ -476,20 +555,10 @@ function toggleLock(index) {
 
 function updateButtonsState() {
     const rollButton = document.getElementById("rollButton");
-
-    // yacht dice 점수 확정(scoreConfirmed) 개념 제거.
-    // 선택지 누르면 주사위 자동 굴림 또는 rollDice 누르면 굴림
-    // 여기서는 간단히 choiceButtons를 항상 비활성화 상태로 두고,
-    // 주사위 굴리기 완료 후 활성화하는 로직 제거
-    // -> 실제 로직: 일반 선택지: 클릭 시 자동 굴림 finalizeChoice 호출
-    // 능력 선택지: rollDice로 굴려야 하므로 rollDice 후 finalizeChoice 가능
+    if (!rollButton) return;
 
     const diceDivs = document.querySelectorAll(".dice");
     const allLocked = Array.from(diceDivs).every((d, i) => locked[i]);
 
-    if (rollsRemaining > 0 && !allLocked) {
-        if (rollButton) rollButton.disabled = false;
-    } else {
-        if (rollButton) rollButton.disabled = true;
-    }
+    rollButton.disabled = rollsRemaining > 0 && !allLocked ? false : true;
 }

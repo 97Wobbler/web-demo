@@ -157,12 +157,12 @@ const events = [
                     },
                 },
                 failure: {
-                    description: "당신은 말을 더듬고, 몸짓은 어색했다. 신도들은 당신을 경멸하는 표정으로 바라보다가 이내 떠나갔다.",
+                    description: "당신은 말을 더듬었고, 몸짓은 어색했다. 신도들은 당신을 경멸하는 표정으로 바라보다가 이내 떠나갔다. 뻘쭘해서 배가 고파졌다.",
                     changes: {
                         relationship: {
                             perennial: -5,
                         },
-                        health: -10,
+                        hunger: -5,
                     },
                 },
             },
@@ -383,7 +383,7 @@ const events = [
     {
         id: "perennial_worship",
         description:
-            "영속회의 신도들이 초현상을 신성한 대상으로 숭배하고 있다. 그들은 당신에게 무릎을 꿇고 경의를 표하라고 요구한다. 초현상은 주변 공기를 기묘하게 뒤틀며 당신을 압박하는 듯하다.",
+            "영속회의 신도들이 숭배회를 열고 있다. 그들은 당신에게 무릎을 꿇고 경의를 표하라고 요구한다. 주변 공기가 당신을 압박하는 듯하다.",
         repeatable: true,
         probability: 12,
         probabilityModifiers: [
@@ -429,7 +429,7 @@ const events = [
                 difficulty: 10,
                 required: null,
                 success: {
-                    description: "당신은 조용히 뒤로 물러나면서 신도들의 시선을 피했다. 그들은 초현상을 바라보며 당신을 더 이상 신경 쓰지 않았다.",
+                    description: "당신은 조용히 뒤로 물러나면서 신도들의 시선을 피했다. 그들은 기현상을 바라보며 당신을 더 이상 신경 쓰지 않았다.",
                     changes: {},
                 },
                 failure: {
@@ -568,7 +568,7 @@ const events = [
     {
         id: "raiders_threat",
         description:
-            "약탈자들이 당신 앞을 가로막고 자원을 강탈하려 한다. 그들은 불쾌한 웃음을 지으며, 당신의 선택을 조롱하는 듯 보인다. 도망치거나 자원을 내놓지 않으면, 당신을 공격할 태세다.",
+            "약탈자들이 당신 앞을 가로막았다. 자원을 강탈하려 한다. 그들은 불쾌한 웃음으로 당신을 조롱한다. 도망치거나 자원을 내놓지 않으면 분명 공격받는다.",
         repeatable: true,
         probability: 15,
         probabilityModifiers: [
@@ -854,7 +854,7 @@ const events = [
                     key: "intimidation",
                 },
                 success: {
-                    description: "당신은 약탈자들을 강력하게 압박했다. 그들은 당신의 위협에 굴복하며 약간의 식량을 제공했다.",
+                    description: "당신은 약탈자들을 강력하게 압박했다. 그들은 당신의 위협에 굴복하며 약간의 식량을 제공했다. 이제 누가 약탈자지?",
                     changes: {
                         hunger: 10,
                         relationship: {
@@ -966,7 +966,7 @@ const events = [
     {
         id: "raiders_trap",
         description:
-            "당신은 약탈자들이 놓은 함정에 걸렸다. 녹슨 철사와 기이하게 뒤틀린 나뭇가지가 엉켜있는 이 함정은 평범한 덫 같지만, 어딘가 이상하다. 철사의 끝에는 알 수 없는 발광 물질이 묻어 있다. 당신은 어떻게 벗어날지 고민한다.",
+            "당신은 함정에 걸렸다. 녹슨 철사와 기이하게 뒤틀린 나뭇가지가 엉켜있는 이 덫은 어딘가 이상하다. 철사의 끝에는 알 수 없는 발광 물질이 묻어 있다.",
         repeatable: true,
         probability: 10,
         probabilityModifiers: [
@@ -1136,7 +1136,7 @@ const events = [
                     },
                 },
                 failure: {
-                    description: "병사들에게 제압당했다. 몇 번의 발길질을 당하고 나서 구역밖으로 쫓겨났다.",
+                    description: "병사들에게 제압당했다. 몇 번의 발길질을 당하고 나서 구역 밖으로 쫓겨났다.",
                     changes: {
                         relationship: {
                             military: -15,
@@ -1667,7 +1667,7 @@ const events = [
     {
         id: "weather_anomaly",
         description:
-            "하늘이 불길하게 물들고 강렬한 폭풍우가 몰아친다. 전자기적 방해로 번개가 기이한 패턴을 그리며 하늘을 가른다. 당신은 이 현상이 단순한 폭풍이 아님을 직감한다.",
+            "하늘이 불길하게 물들고 강렬한 폭풍우가 몰아친다. 전자기적 방해로 번개가 기이한 패턴을 그리며 하늘을 가른다. 당신은 단순한 폭풍이 아님을 직감한다.",
         repeatable: true,
         probability: 12,
         probabilityModifiers: [
@@ -1800,7 +1800,7 @@ const events = [
     },
     {
         id: "unknown_entity",
-        description: "시야에 포착되는 것은 없지만 기묘한 기분이 든다. 마치 무언가 당신을 지켜보고 있는 듯한 느낌이다.",
+        description: "기묘한 기분이 든다. 시야에 포착되는 것은 없지만 무언가 당신을 지켜보고 있는 듯한 느낌이다.",
         repeatable: true,
         probability: 8,
         probabilityModifiers: [
